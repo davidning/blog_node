@@ -1,3 +1,10 @@
+/*
+ *
+ * Controller class of posts.
+ * Here its received the request, call model and sent response.
+ *
+ **/
+
 module.exports = function( req, res ) { 
     
     this.req = req;

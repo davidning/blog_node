@@ -1,3 +1,8 @@
+/*
+ *
+ * config settings
+ *
+ **/
 exports.port = 3600;
 exports.view_engine = 'ejs';
 exports.cookie = 'blog-proj';

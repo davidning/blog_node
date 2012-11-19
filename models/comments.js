@@ -1,3 +1,10 @@
+/*
+ *
+ * Model class of comments.
+ * Here it's the methods to save and get comments from db.
+ *
+ **/
+
 module.exports = function( req, res, connection ) {
     
     this.req = req;

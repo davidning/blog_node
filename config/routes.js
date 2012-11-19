@@ -1,3 +1,9 @@
+/*
+ *
+ * Define all routes and call controllers files.
+ *
+ **/
+
 module.exports = function(app) {
     
     app.get('/', function(req, res){

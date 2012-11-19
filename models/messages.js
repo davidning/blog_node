@@ -1,3 +1,10 @@
+/*
+ *
+ * Small class to manage messages.
+ * Get message from session and sent response depending the type.
+ *
+ **/
+
 module.exports = function( req ) { 
     this.req = req;
     this.getMessage = function( clean ){

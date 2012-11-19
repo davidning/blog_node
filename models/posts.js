@@ -1,3 +1,8 @@
+/*
+ *
+ * Model to manage all. Here are made all db actions.
+ *
+ **/
 module.exports = function( req, res ) { 
     
     this.req = req;

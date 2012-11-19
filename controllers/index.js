@@ -1,3 +1,10 @@
+/*
+ *
+ * Controller class of index page.
+ * Here its received the request, call model and sent response.
+ *
+ **/
+
 module.exports = function( req, res ) { 
     this.req = req;
     this.res = res;
