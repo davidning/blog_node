@@ -1,0 +1,40 @@
+<% include header -%>
+    <div id="wrap">
+
+      <!-- Begin page content -->
+      <div class="container">
+        <div class="page-header">
+          <h1><%- posts['title'] %></h1>
+        </div>
+        <p class="lead"><%- posts['body'] %></p>
+        <form class="bs-docs-example" method="post" action="/post/<%= postId %>">
+        <fieldset>
+            <legend>Comments</legend>
+            <% console.log('comments111',comments);var c_parent = "0", c_padding = 0, title = '';  %>
+            <% for(var i=0; i<comments.length; i++) { %>
+            <% title = comments[i]['title']; if( c_parent!=comments[i]['parent_id'] ){ c_parent = comments[i]['parent_id']; if ( comments[i]['parent_id']!="0" && c_padding==0 ){ c_padding += 20;} else if ( comments[i]['parent_id']=="0"){ c_padding = 0;} } if ( c_padding>0 ) { title = '<small>'+comments[i]['title']+'</small>'; } %>
+            <div style="padding-left:<%- c_padding %>px;">
+                <h3><%- title %></h3>
+                <p><%- comments[i]['body'] %></p>
+                <a href="#" onclick="$('#type').val('new');$('#parent-id').val('<%- comments[i]['id'] %>');$('#comment-title').val('RE: <%- comments[i]['title'] %>');$('#comment-title').attr('readOnly', 'readOnly');">responder</a> |
+                <a href="#" onclick="$('#type').val('edit');$('#comment-id').val('<%- comments[i]['id'] %>');$('#comment-title').val('<%- comments[i]['title'] %>');$('#comment-text').val('<%- comments[i]['body'] %>');$('#comment-title').attr('readOnly', 'readOnly');">edit</a> | 
+                <a href="#"  onclick="$('#type').val('delete');$('.bs-docs-example').submit();">delete</a>
+            </div>
+            <% } %>
+            <label>Title</label>
+            <input type="hidden" name="postId" value="<%= postId %>" />
+            <input type="hidden" name="type" id="type" value="new" />
+            <input type="hidden" id="comment-id" name="commentId" value="0" />
+            <input type="hidden" id="parent-id" name="parentId" value="0" />
+            <input type="text" id="comment-title" name="comment_title">
+            <label>Comment</label>
+            <textarea rows="5" id="comment-text" name="comment_text"></textarea>
+            <br>
+            <button class="btn" type="submit">Submit</button>
+        </fieldset>
+        </form>
+      </div>
+
+      <div id="push"></div>
+    </div>
+    <% include footer -%>

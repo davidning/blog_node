@@ -1,0 +1,18 @@
+<% include header -%>
+
+          <div class="hero-unit">
+            <form class="bs-docs-example" method="post" action="/post/<%= type %>">
+              <fieldset>
+                <legend>POST</legend>
+                <label>Title</label>
+                <input type="hidden" name="postId" value="<%= postId %>" />
+                <input type="text" name="post_title" placeholder="Enter a post title" value="<%= posts['title'] %>" required="required">
+                <label>Post</label>              
+                <textarea id="post-message" name="post_text" placeholder="Enter a post message ..." style="width:100%;" required="required"><%= posts['body'] %></textarea>
+                <br>
+                <button class="btn" type="submit">Submit</button>
+              </fieldset>
+            </form>  
+          </div>
+            
+    <% include footer -%>
