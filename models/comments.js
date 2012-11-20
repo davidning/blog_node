@@ -12,30 +12,40 @@ module.exports = function( req, res, connection ) {
     this.mongoose = connection || require('mongoose');
 
     this.set = function( key, value ){
-      this[key] = value;  
+        this[key] = value;
     };
     
     this.newComment = function(){
         var self = this;
 
         var CommentsModel = self.mongoose.model('comments');
-        var post_id = self.req.param('postId', 0);
+        var post_id = self.req.param('postId', '');
+        var title = self.req.param('comment_title', '');
+        var comment = self.req.param('comment_text', '');
+        console.log('HERE1', comment, title);
+        if ( post_id=="" || comment=="" || title == "" ){
+            self.res.statusCode = 500;
+            self.req.session.errorMessage = 'Fields required!';            
+            self.res.end('Fields required!');
+            return false;
+        }
         var posts = new CommentsModel({
             user_id:1, 
             parent_id: self.req.param('parentId', 0),
             post_id: post_id,
-            title: self.req.param('comment_title', ''), 
-            body: self.req.param('comment_text', '')
+            title: title,
+            body: comment
         });
         posts.save(function (err) {
-                if ( !err ){
-                    self.req.session.successMessage = 'Comment updated!';
-                    self.res.redirect('/post/' + self.req.param('postId', ''));
-                }
-                else{
-                    self.req.session.errorMessage = 'Fail on update comment!';
-                    self.res.redirect('/');
-                }            
+            if ( !err ){
+                self.req.session.successMessage = 'Comment updated!';
+                self.res.redirect('/post/' + self.req.param('postId', ''));
+            }
+            else{
+                self.res.writeHead(500, self.res.headers);
+                self.req.session.errorMessage = 'Fail on update comment!';
+                self.res.redirect('/');
+            }
         });         
     };
     
@@ -43,22 +53,34 @@ module.exports = function( req, res, connection ) {
         var self = this;
 
         var CommentsModel = self.mongoose.model('comments');
-        CommentsModel.update({_id: self.req.param('commentId')}
-            , {
-                title: self.req.param('comment_title', ''),
-                body: self.req.param('comment_text', '')
+        var comment_id = self.req.param('commentId');
+        if( comment_id ){
+            self.res.statusCode = 500;
+            self.req.session.errorMessage = 'Fields required!';
+            self.res.end('Fields required!');
+            return false;
+        }
+        CommentsModel.update({
+            _id: comment_id
             }
-            , {upsert: true}
-            , function( err ){
-                if ( !err ){
-                    self.req.session.successMessage = 'Comment updated!';
-                    self.res.redirect('/post/' + self.req.param('postId', ''));
-                } 
-                else{
-                    self.req.session.errorMessage = 'Fail on update comment!';
-                    self.res.redirect('/');
-                }
+        , {
+            title: self.req.param('comment_title', ''),
+            body: self.req.param('comment_text', '')
+        }
+        , {
+            upsert: true
+        }
+        , function( err ){
+            if ( !err ){
+                self.req.session.successMessage = 'Comment updated!';
+                self.res.redirect('/post/' + self.req.param('postId', ''));
             }
+            else{
+                self.res.writeHead(500, self.res.headers);
+                self.req.session.errorMessage = 'Fail on update comment!';
+                self.res.redirect('/');
+            }
+        }
         );       
     };
     this.deleteComment = function(){
@@ -66,18 +88,29 @@ module.exports = function( req, res, connection ) {
 
         var CommentsModel = self.mongoose.model('comments');
 
-        CommentsModel.find({ $or: [ {_id: self.req.params.id}, {parent_id: self.req.params.id} ] }, function (err, docs) {
+        CommentsModel.find({
+            $or: [ {
+                _id: self.req.params.id
+                }, {
+                parent_id: self.req.params.id
+                } ]
+        }, function (err, docs) {
             if (!err){
                 if ( docs instanceof Array ){
                     for( var i in docs ){
-                        CommentsModel.remove({ _id: docs[i]._id}, function(err) {});
+                        CommentsModel.remove({
+                            _id: docs[i]._id
+                            }, function(err) {});
                     }
                 }
-                else CommentsModel.remove({ _id: docs._id}, function(err) {});
+                else CommentsModel.remove({
+                    _id: docs._id
+                    }, function(err) {});
                 self.req.session.successMessage = 'Comment deleted!';
                 self.res.redirect('/post/' + self.req.param('postId', ''));
             }
             else{
+                self.res.writeHead(500, self.res.headers);
                 self.req.session.errorMessage = 'Fail on delete comment!';
                 self.res.redirect('/');
             }
@@ -113,12 +146,34 @@ module.exports = function( req, res, connection ) {
         , ObjectId = Schema.ObjectId;
 
         var Comment = new Schema({
-            parent_id  :  { type: String, index: true, 'default':"0" }
-          , post_id   :  { type: String, index: true }
-          , user_id   :  { type: Number, index: true }
-          , title   :  { type: String }
-          , body  :  { type: String }
-          , created_on  :  { type: Date, 'default': Date.now }
+            parent_id  :  {
+                type: String,
+                index: true,
+                'default':"0"
+            }
+            ,
+            post_id   :  {
+                type: String,
+                index: true
+            }
+            ,
+            user_id   :  {
+                type: Number,
+                index: true
+            }
+            ,
+            title   :  {
+                type: String
+            }
+            ,
+            body  :  {
+                type: String
+            }
+            ,
+            created_on  :  {
+                type: Date,
+                'default': Date.now
+            }
         });
         var CommentsModel = self.mongoose.model('comments', Comment);
         
